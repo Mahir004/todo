@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Tasks</title>
+    <!-- Modern Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Color Palette */
+            --bg-base: #030712;
+            --surface: rgba(17, 24, 39, 0.7);
+            --surface-hover: rgba(31, 41, 55, 0.8);
+            --border: rgba(255, 255, 255, 0.08);
+            
+            --accent-1: #8b5cf6;
+            --accent-2: #3b82f6;
+            --accent-glow: rgba(139, 92, 246, 0.5);
+            
+            --text-primary: #f9fafb;
+            --text-secondary: #9ca3af;
+            --text-muted: #4b5563;
+            
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.4);
+            
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 8px;
+            
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 40%);
+        }
+
+        .ambient-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .blob {
+            position: absolute;
+            filter: blur(90px);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+        
+        .blob-1 {
+            top: -10%;
+            left: -10%;
+            width: 50vw;
+            height: 50vw;
+            background: rgba(139,92,246,0.3);
+            animation-delay: 0s;
+        }
+        
+        .blob-2 {
+            bottom: -20%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: rgba(59,130,246,0.2);
+            animation-delay: -5s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(5%, 5%) scale(1.1); }
+            66% { transform: translate(-5%, 10%) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        /* Layout */
+        .app-wrapper {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            width: 90vw;
+            max-width: 1000px;
+            height: 80vh;
+            min-height: 600px;
+            background: var(--surface);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.95) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        /* Sidebar / Welcome Panel */
+        .hero-panel {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid var(--border);
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+        }
+
+        .greeting {
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .date-display {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .stats-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-top: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+        }
+
+        .stats-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 500;
+        }
+
+        .stats-number {
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            line-height: 1;
+        }
+
+        .stats-label {
+            font-size: 16px;
+            color: var(--accent-1);
+            font-weight: 500;
+        }
+
+        .branding {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        
+        .branding i {
+            font-size: 20px;
+            color: var(--accent-2);
+        }
+
+        /* Main Task Area */
+        .main-panel {
+            padding: 40px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 20px;
+            font-size: 20px;
+            color: var(--accent-1);
+            pointer-events: none;
+        }
+
+        .task-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 120px 20px 56px;
+            font-size: 16px;
+            color: var(--text-primary);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .task-input:focus {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: var(--accent-1);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+        }
+
+        .task-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn-add {
+            position: absolute;
+            right: 8px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white;
+            border: none;
+            border-radius: calc(var(--radius-lg) - 8px);
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .btn-add:hover {
+            transform: scale(1.02) translateY(-1px);
+            box-shadow: 0 6px 20px var(--accent-glow);
+            filter: brightness(1.1);
+        }
+
+        .btn-add:active {
+            transform: scale(0.98);
+        }
+
+        /* Task List */
+        .list-header {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-list {
+            list-style: none;
+            overflow-y: auto;
+            padding-right: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+        }
+
+        /* Custom Scrollbar */
+        .task-list::-webkit-scrollbar { width: 6px; }
+        .task-list::-webkit-scrollbar-track { background: transparent; }
+        .task-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        .task-list::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 18px 24px;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        .task-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--accent-1), var(--accent-2));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .task-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateX(6px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .task-item:hover::before { opacity: 1; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-content {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .task-text {
+            font-size: 16px;
+            color: var(--text-primary);
+            flex: 1;
+            word-break: break-all;
+            line-height: 1.4;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transform: translateX(10px);
+            transition: var(--transition);
+        }
+
+        .task-item:hover .task-actions {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            font-size: 18px;
+        }
+
+        .btn-edit:hover { color: var(--accent-2); }
+        .btn-delete:hover { color: var(--danger); }
+
+        /* Editing State */
+        .edit-input {
+            display: none;
+            flex: 1;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--accent-1);
+            color: var(--text-primary);
+            font-size: 16px;
+            padding: 4px 0;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .task-item.is-editing .task-text { display: none; }
+        .task-item.is-editing .edit-input { display: block; }
+        .task-item.is-editing .action-btn { opacity: 1; transform: none; }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+            text-align: center;
+            gap: 16px;
+        }
+
+        .empty-state i {
+            font-size: 56px;
+            opacity: 0.3;
+            background: linear-gradient(135deg, var(--text-muted), var(--bg-base));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Toasts System */
+        .toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: rgba(31, 41, 55, 0.95);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            min-width: 300px;
+        }
+
+        .toast.show { transform: translateX(0); }
+
+        .toast-icon { font-size: 22px; margin-top: 2px; }
+        .toast-icon.error { color: var(--danger); text-shadow: 0 0 10px var(--danger-glow); }
+        .toast-icon.success { color: var(--accent-1); text-shadow: 0 0 10px var(--accent-glow); }
+
+        .toast-content { display: flex; flex-direction: column; gap: 4px; }
+        .toast-title { font-weight: 600; font-size: 15px; color: var(--text-primary); }
+        .toast-msg { font-size: 14px; color: var(--text-secondary); line-height: 1.4; }
+
+        /* Responsive */
+        @media (max-width: 850px) {
+            .app-wrapper { grid-template-columns: 1fr; height: 95vh; }
+            .hero-panel { padding: 24px; flex-direction: row; border-right: none; border-bottom: 1px solid var(--border); }
+            .stats-card { margin-top: 0; padding: 16px 24px; }
+            .branding { display: none; }
+            .main-panel { padding: 24px; }
+            .task-actions { opacity: 1; transform: none; }
+            .task-input { padding-right: 100px; }
+            .btn-add { padding: 12px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="app-wrapper">
+        <!-- Sidebar -->
+        <div class="hero-panel">
+            <div class="date-widget">
+                <div class="greeting" id="greeting">Good Morning</div>
+                <div class="date-display" id="date-display">Monday, Jan 1</div>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-title">Active Tasks</div>
+                <div class="stats-number"><span id="task-count">0</span> <span class="stats-label">pending</span></div>
+            </div>
+
+            <div class="branding">
+                <i class="ri-blaze-fill"></i> Aura Workspace
+            </div>
+        </div>
+
+        <!-- Main Panel -->
+        <div class="main-panel">
+            <div class="input-wrapper">
+                <i class="ri-add-line"></i>
+                <input type="text" class="task-input" id="new-todo" placeholder="What needs to be done today?" autocomplete="off">
+                <button class="btn-add" onclick="addTodo()">Create</button>
+            </div>
+
+            <div class="list-header">
+                <span>Your Targets</span>
+                <span id="loading-spinner" style="display: none;"><i class="ri-loader-4-line ri-spin" style="color: var(--accent-1); font-size: 20px;"></i></span>
+            </div>
+
+            <ul class="task-list" id="todo-list">
+                <!-- Data renders here -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Toasts -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        const API_URL = 'http://localhost:9090/todos';
+        let todos = [];
+
+        // Elements
+        const listEl = document.getElementById('todo-list');
+        const inputEl = document.getElementById('new-todo');
+        const countEl = document.getElementById('task-count');
+        const spinner = document.getElementById('loading-spinner');
+
+        // Initial UI Scripts
+        function updateDate() {
+            const now = new Date();
+            const hour = now.getHours();
+            let greeting = 'Good Evening';
+            if (hour < 12) greeting = 'Good Morning';
+            else if (hour < 18) greeting = 'Good Afternoon';
+            
+            document.getElementById('greeting').textContent = greeting;
+            
+            const options = { weekday: 'long', month: 'short', day: 'numeric' };
+            document.getElementById('date-display').textContent = now.toLocaleDateString('en-US', options);
+        }
+        updateDate();
+
+        // Toast System
+        function showToast(title, message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            
+            const icon = type === 'error' ? 'ri-error-warning-fill error' : 'ri-checkbox-circle-fill success';
+            
+            toast.innerHTML = `
+                <i class="${icon} toast-icon"></i>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-msg">${message}</div>
+                </div>
+            `;
+            container.appendChild(toast);
+            
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+            
+            // Destroy
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 5000);
+        }
+
+        // Fetch Data
+        async function fetchTodos() {
+            spinner.style.display = 'inline-block';
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Network response was not ok');
+                todos = await response.json();
+                renderTodos();
+            } catch (error) {
+                console.error(error);
+                showToast('Unable to reach server', 'Could not load your tasks. Please ensure your backend is running on port 9090 and CORS is configured.');
+                renderEmptyState('Could not connect to the database.');
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+
+        // Add
+        async function addTodo() {
+            const text = inputEl.value.trim();
+            if (!text) return;
+
+            inputEl.disabled = true;
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+                
+                if (!response.ok) throw new Error('Failed to add task due to server error or CORS blockage.');
+                
+                const newTodo = await response.json();
+                todos.push(newTodo);
+                inputEl.value = '';
+                renderTodos();
+            } catch (error) {
+                console.error("Add error:", error);
+                
+                // Show a helpful toast about CORS since we can detect fetch failure for POST but wait... fetch fails on CORS before reaching server.
+                showToast('Action Blocked by CORS', 'Your browser blocked the request. You need to uncomment the `app.use(cors())` lines in your server.js and restart the backend, OR use a CORS extension!');
+            } finally {
+                inputEl.disabled = false;
+                inputEl.focus();
+            }
+        }
+
+        // Delete
+        async function deleteTodo(id) {
+            try {
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: 'DELETE'
+                });
+                if (!response.ok) throw new Error('Failed to delete');
+                
+                todos = todos.filter(t => t.id !== id);
+                renderTodos();
+                showToast('Task Deleted', 'The task has been permanently removed.', 'success');
+            } catch (error) {
+                showToast('Error', 'Failed to delete task.');
+            }
+        }
+
+        // Edit
+        function toggleEdit(id) {
+            const item = document.getElementById(`todo-${id}`);
+            const isEditing = item.classList.contains('is-editing');
+            
+            if (isEditing) {
+                const input = item.querySelector('.edit-input');
+                updateTodo(id, input.value.trim());
+            } else {
+                item.classList.add('is-editing');
+                const btn = item.querySelector('.btn-edit i');
+                btn.className = 'ri-check-line';
+                btn.parentElement.style.color = 'var(--accent-1)';
+                
+                const input = item.querySelector('.edit-input');
+                input.focus();
+                
+                // Cursor at end
+                let val = input.value;
+                input.value = '';
+                input.value = val;
+                
+                input.onkeyup = (e) => {
+                    if (e.key === 'Enter') updateTodo(id, input.value.trim());
+                    if (e.key === 'Escape') renderTodos();
+                };
+            }
+        }
+
+        async function updateTodo(id, newText) {
+            const todo = todos.find(t => t.id === id);
+            
+            if (!newText || todo.text === newText) {
+                renderTodos(); 
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text: newText })
+                });
+                if (!response.ok) throw new Error('Failed to update');
+                
+                const updated = await response.json();
+                const index = todos.findIndex(t => t.id === id);
+                if (index !== -1) todos[index] = updated;
+                
+                renderTodos();
+                showToast('Task Updated', 'Your changes have been saved.', 'success');
+            } catch (error) {
+                showToast('Update Failed', 'Could not save the modifications.');
+                renderTodos();
+            }
+        }
+
+        // Rendering
+        function renderEmptyState(msg = "You're all caught up! Enjoy your day.") {
+            listEl.innerHTML = `
+                <div class="empty-state">
+                    <i class="ri-checkbox-multiple-blank-line"></i>
+                    <p>${msg}</p>
+                </div>
+            `;
+            countEl.textContent = '0';
+        }
+
+        function renderTodos() {
+            listEl.innerHTML = '';
+            countEl.textContent = todos.length;
+
+            if (todos.length === 0) {
+                renderEmptyState();
+                return;
+            }
+
+            // Newest at top
+            todos.slice().reverse().forEach((todo, index) => {
+                const li = document.createElement('li');
+                li.className = 'task-item';
+                li.id = `todo-${todo.id}`;
+                li.style.animationDelay = `${index * 0.04}s`; // staggered animation
+                
+                li.innerHTML = `
+                    <div class="task-content">
+                        <span class="task-text">${escapeHtml(todo.text)}</span>
+                        <input type="text" class="edit-input" value="${escapeHtml(todo.text)}">
+                    </div>
+                    <div class="task-actions">
+                        <button class="action-btn btn-edit" onclick="toggleEdit(${todo.id})" title="Edit">
+                            <i class="ri-pencil-line"></i>
+                        </button>
+                        <button class="action-btn btn-delete" onclick="deleteTodo(${todo.id})" title="Delete">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </div>
+                `;
+                listEl.appendChild(li);
+            });
+        }
+
+        function escapeHtml(unsafe) {
+            return (unsafe || "")
+                 .toString()
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;")
+                 .replace(/"/g, "&quot;")
+                 .replace(/'/g, "&#039;");
+        }
+
+        // Global Events
+        inputEl.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') addTodo();
+        });
+
+        // Bootstrap App
+        fetchTodos();
+    </script>
+</body>
+</html>
