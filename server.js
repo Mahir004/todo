@@ -1,26 +1,28 @@
-const express = require('express')
+import express from 'express'
+import todos from "./todos.js"
+import cors from 'cors'
+
 const app = express()
 const port = 9090
-const cors = require("cors")
-
-
 app.use(cors())
 app.use(express.json())
 
 
-const todos = require("./todos")
-
-app.get('/todos',(req,res)=>{
-    res.json(todos.getAll())
+app.get('/',(req,res)=>{
+    res.json('Server running')
 })
 
-app.post('/todos',(req,res)=>{
-    const todo = todos.add(req.body.text)
+app.get('/todos',async (req,res)=>{
+    res.json(await todos.getAll())
+})
+
+app.post('/todos',async (req,res)=>{
+    const todo = await todos.add(req.body.text)
     res.json(todo)
 })
 
-app.patch('/todos/:id',(req,res)=>{
-    const updated = todos.update(
+app.patch('/todos/:id',async (req,res)=>{
+    const updated = await todos.update(
         parseInt(req.params.id),
         req.body.text)
 
@@ -31,9 +33,11 @@ app.patch('/todos/:id',(req,res)=>{
 
 })
 
-app.delete('/todos/:id',(req,res)=>{
-    todos.del(parseInt(req.params.id))
+app.delete('/todos/:id',async(req,res)=>{
+    await todos.del(parseInt(req.params.id))
     res.json({message:"Deleted"})
 })
 
-app.listen(port,()=>{})
+app.listen(port,()=>{
+    console.log(`Server running on port ${port}`)
+})
