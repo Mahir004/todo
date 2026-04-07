@@ -1,0 +1,8 @@
+services:
+  todo:
+    build: .
+    container_name: todo-container
+    ports:
+      - "9090:9090"
+    env_file:
+      - .env.docker

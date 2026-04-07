@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.env
+.env.docker
+.DS_Store
+drizzle/meta
+Dockerfile
+docker-compose.yml

@@ -13,6 +13,7 @@
   "type": "module",
   "dependencies": {
     "@libsql/client": "^0.17.2",
+    "alpine": "^0.2.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.0",
     "drizzle-orm": "^0.45.2",
